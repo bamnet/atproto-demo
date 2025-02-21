@@ -7,7 +7,17 @@
     <title>Vite + TS</title>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <div id="loginForm" style="display: none;">
+        <h1>Login</h1>
+        <label for="handle">Handle</label>
+        <input id="handle" type="text" placeholder="bamnet.bsky.social" />
+        <br />
+        <button id="login">Login</button>
+      </div>
+      <button id="logout" style="display: none;">Logout</button>
+      <div id="info"></div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
