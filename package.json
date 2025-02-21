@@ -13,6 +13,7 @@
     "vite": "^6.1.0"
   },
   "dependencies": {
+    "@atproto/api": "^0.14.2",
     "@atproto/oauth-client-browser": "^0.3.10"
   }
 }

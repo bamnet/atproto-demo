@@ -1,32 +1,22 @@
 import './style.css'
 
 import {BrowserOAuthClient} from '@atproto/oauth-client-browser'
+import {Agent} from '@atproto/api';
 
-const oauthClient = await OAuthClientFactory();
+// Manually construct a Client ID for local development.
+const CLIENT_ID = 
+  // Special loopback behavior is only trigged for localhost.
+  'http://localhost' +  
+  // Include any scopes necessary for your application.
+  // atproto and transition:generic cover the bacics.
+  '?scope=atproto%20transition:generic' +
+  // Include the redirect URI to bring users back to your applicaion.
+  '&redirect_uri=' + window.origin;
 
-// OAuthClientFactory is a returns an OAuthClient
-// depending on the environment your application is running in.
-//
-// You could hardcode this information and use comments to swap between
-// the two, but this is a more flexible way to handle it.
-async function OAuthClientFactory() {
-  // In development, return a client that uses the local server.
-  if (import.meta.env.MODE === 'development') {
-    return new BrowserOAuthClient({
-      handleResolver: 'https://bsky.social',
-      // If the current origin is an address like 127.0.0.1
-      // we can trigger a special loopback flow.
-      clientMetadata: undefined,
-    });
-  }
-  
-  // In production, return a client that actually
-  // exposes client_metadata.json
-  return await BrowserOAuthClient.load({
-    clientId: '<YOUR PRODUCTION URL HERE>',
-    handleResolver: 'https://bsky.social/',
-  });
-}
+const oauthClient = await BrowserOAuthClient.load({
+  clientId: CLIENT_ID,
+  handleResolver: 'https://bsky.social/',
+});
 
 async function initBluesky() {
   // Initialize the OAuth client.
@@ -58,6 +48,19 @@ async function initBluesky() {
 
   // The user is signed in.
   infoBox.innerText = `You are signed in as ${session.did}`;
+
+  const agent = new Agent(session);
+  showProfile(agent);
+}
+
+async function showProfile(agent: Agent) {
+  const profile = await agent.getProfile({ actor: agent.did! });
+  infoBox.innerHTML = `
+    You are signed in as ${profile.data.displayName}.
+    <br>
+    <img width="50" src="${profile.data.avatar}" alt="Profile picture">
+    `;
+  console.log(profile.data);
 }
 
 // Start to login a user.
